@@ -6,39 +6,36 @@ from retailers.items import RetailersItem
 
 class MultiSpider(CrawlSpider):
     name = 'multi'
-    allowed_domains = ('www.universalstore.com',)
-    rules = [Rule(LinkExtractor(allow=r'/store-locator'), follow=True, callback='parse_item')]
-    start_urls = ('https://www.universalstore.com/store-locator/',)
+    allowed_domains = ('www.veronikamaine.com.au',)
+    rules = [Rule(LinkExtractor(allow=r'/Stores'), follow=True, callback='parse_item')]
+    start_urls = ('https://www.veronikamaine.com.au/Stores',)
     custom_settings = {'ROBOTSTXT_OBEY': False}
 
     def parse_item(self, response):
         item = RetailersItem()
-        phone_numbers_array = response.xpath('//p[@class="phone-number"]/text()').extract()
-        store_names_array = response.xpath('//p[@class="storename"]/text()').extract()
-        store_hours_array = response.xpath('//p[@class="opening-hours"]')
-        addresses_array = response.xpath('//p[@class="address"]')
-        # for hours in store_hours_array:
-        #     (hours.xpath('normalize-space(.)').extract())
+        store_names_array = response.xpath('//div[@id="countryWrapper"]//ul/li//h2/text()').extract()
+        addresses_array = response.xpath('//div[@id="countryWrapper"]//ul/li//address')
+        phone_numbers_array = [item.strip() for item in response.xpath('//section[@class="storeListing"]//ul/li/div[@class="detailsMain"]/text()[normalize-space(.)]').extract()]
+        opening_hours_array = response.xpath('//div[@id="countryWrapper"]//ul/li/div[@class="openingHours"]')
 
-        # json_node = response.xpath('//script[contains("@type":"Store")]/text()').extract_first()
-        # print(json_node)
-        # item['store_hours'] = response.xpath('//time[@itemprop="openingHours"]/@datetime').extract()
-        # item['location'] = response.xpath('normalize-space(//section[contains(@class, "store-address-phone")])').extract_first()
         for i, val in enumerate(phone_numbers_array):
             item['phone_number'] = val
             item['store_name'] = store_names_array[i]
-            item['store_hours'] = store_hours_array[i].xpath('substring-after(normalize-space(.), "Opening Hours: ")').extract()
-            item['address'] = addresses_array[i].xpath('normalize-space(.)').extract_first()
-            for state in ['QLD', 'VIC', 'NSW', 'SA', 'WA', 'NT']:
-                if state in item['address']:
-                    item['state'] = state
+
+            item['store_hours'] = opening_hours_array[i].xpath('normalize-space(.)').extract_first()
+            # item['store_hours'] = store_hours_array[i].xpath('substring-after(normalize-space(.), "Opening Hours: ")').extract()
+
+            item['address'] = ' '.join(addresses_array[i].xpath('.//p/text()').extract())
+
+            suburbpostcode = addresses_array[i].xpath('./text()[normalize-space(.)]').extract_first().strip().split('  ')
+            item['suburb'] = suburbpostcode[0]
+            item['zip_code'] = suburbpostcode[1]
+
+            # suburbpostcode = addresses_array[10].xpath('re:match(./text()[normalize-space(.)], "Castle (\w*)")/text()').extract()
+            # for state in ['QLD', 'VIC', 'NSW', 'SA', 'WA', 'NT']:
+            #     if state in item['address']:
+            #         item['state'] = state
             yield item
-        # pass
 
-
-
-    # city = scrapy.Field()
-    # suburb = scrapy.Field()
-    # zip_code = scrapy.Field()
     # latitude = scrapy.Field()
     # longitude = scrapy.Field()
