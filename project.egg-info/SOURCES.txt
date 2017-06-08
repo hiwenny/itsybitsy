@@ -1,0 +1,17 @@
+setup.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
+retailers/__init__.py
+retailers/items.py
+retailers/middlewares.py
+retailers/pipelines.py
+retailers/settings.py
+retailers/spiders/__init__.py
+retailers/spiders/glue.py
+retailers/spiders/johnnybigg.py
+retailers/spiders/multi.py
+retailers/spiders/sds.py
+retailers/spiders/theathletesfoot.py
