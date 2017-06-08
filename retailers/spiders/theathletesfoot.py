@@ -9,8 +9,8 @@ from retailers.items import RetailersItem
 class TAFSpider(CrawlSpider):
     name = 'theathletesfoot'
     allowed_domains = ('www.theathletesfoot.com.au',)
-    rules = [Rule(LinkExtractor(), follow=True, callback='parse_item')]
-    start_urls = ('https://www.theathletesfoot.com.au/findastore',)
+    rules = [Rule(LinkExtractor(deny='r/shoe-brands'), follow=True, callback='parse_item')]
+    start_urls = ('https://www.theathletesfoot.com.au/',)
 
     def parse_item(self, response):
         if 'store-location' not in response.url:

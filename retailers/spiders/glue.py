@@ -1,5 +1,6 @@
 # for extracting info in individual pages recursively.
 from scrapy.spiders import CrawlSpider, Rule
+from scrapy import Request
 from scrapy.linkextractors import LinkExtractor
 import json
 
@@ -9,8 +10,13 @@ from retailers.items import RetailersItem
 class GlueSpider(CrawlSpider):
     name = 'glue'
     allowed_domains = ('www.gluestore.com.au',)
-    rules = [Rule(LinkExtractor(), follow=True, callback='parse_item')]
-    start_urls = ('https://www.gluestore.com.au/stores',)
+    # rules = [Rule(LinkExtractor(allow='/stores/.*'), follow=True, callback='parse_item')]
+    rules = [Rule(LinkExtractor(deny=r'/blog'), follow=True, callback='parse_item')]
+    start_urls = ('https://www.gluestore.com.au/',)
+    custom_settings = {'DUPEFILTER_DEBUG':True, 'ROBOTSTXT_OBEY': False}
+
+    # def parse_dupe(self, response):
+    #     yield Request(url=response.url, dont_filter=True, callback=self.parse_item)
 
     def parse_item(self, response):
         if 'stores' not in response.url:
