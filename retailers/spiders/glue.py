@@ -13,7 +13,7 @@ class GlueSpider(CrawlSpider):
     # rules = [Rule(LinkExtractor(allow='/stores/.*'), follow=True, callback='parse_item')]
     rules = [Rule(LinkExtractor(deny=r'/blog'), follow=True, callback='parse_item')]
     start_urls = ('https://www.gluestore.com.au/',)
-    custom_settings = {'DUPEFILTER_DEBUG':True, 'ROBOTSTXT_OBEY': False}
+    custom_settings = {'DUPEFILTER_DEBUG':True}
 
     # def parse_dupe(self, response):
     #     yield Request(url=response.url, dont_filter=True, callback=self.parse_item)
